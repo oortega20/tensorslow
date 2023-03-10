@@ -1,6 +1,0 @@
-README.md
-setup.py
-tensorslow.egg-info/PKG-INFO
-tensorslow.egg-info/SOURCES.txt
-tensorslow.egg-info/dependency_links.txt
-tensorslow.egg-info/top_level.txt
