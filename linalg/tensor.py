@@ -90,7 +90,7 @@ class Tensor():
    
     def _unary_op(self, op):
         tensor = Tensor([], self.shape)
-        for i in range(self.num_entries()):        
+        for i in range(self.num_entries):        
             loc = self.entry_loc(i)
             x = self.get_entry(loc)
             tensor.set_entry(loc, op(x))
@@ -127,8 +127,9 @@ class Tensor():
         def matmul_helper(tensor1, tensor2):
             nonlocal current_batch
             nonlocal t
-            for x in range(t.shape[-2]):
-                for y in range(t.shape[-1]):
+            x_dim, y_dim = t.shape[-2:]
+            for x in range(x_dim):
+                for y in range(y_dim):
                     current_batch[x][y] = self.dot_product(tensor1[x], tensor2[y])
               
         if self.shape_compatible(tensor2, 'matmul'):
