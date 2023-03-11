@@ -2,7 +2,7 @@ import math
 from typing import Union, List
 
 class Tensor():
-    def __init__(self, data: List[Union[float|int]], shape: List[int], init: str=''):
+    def __init__(self, data: List[Union[int, float]], shape: List[int], init: str=''):
         self.shape = shape
         self.data = data
         self.init = init
@@ -24,7 +24,7 @@ class Tensor():
             entry_num  = entry_num // elem        
         return entry_loc
     
-    def _shape_compatible(self, tensor: Tensor, op: str) -> bool:
+    def _shape_compatible(self, tensor, op: str) -> bool:
         if op == 'binary':
             return self.shape == tensor.shape
         elif op == 'matmul':
@@ -58,6 +58,7 @@ class Tensor():
  
     def _shape_tensor(self):
         def build_tensor(data, shape):
+            entries = 0.0
             if self.init:
                 if self.init == 'zeros':
                     entries = 0.0
@@ -68,14 +69,14 @@ class Tensor():
         tensor = build_tensor(self.data, self.shape)
         if self.data: 
             for i in range(self.num_entries):
-                self.set_entry(self.entry_loc(i), self.data[i]) 
+                self._set_entry(self._entry_loc(i), self.data[i]) 
             
         return self.tensor
 
         
     @property
     def transpose(self):
-        transposed_shape = self.shape[:-2] + self.shape[-2::-1]
+        transposed_shape = self.shape[:-2] + self.shape[-2:][::-1]
         tensor = Tensor([], transposed_shape)
         if self.order == 2:
             x_dim, y_dim = self.shape
@@ -83,9 +84,9 @@ class Tensor():
                 for y in range(y_dim):
                     tensor.tensor[y][x] = self.tensor[x][y]
         else:
-            for i in range(self.num_entries(is_batch=True)):
-                t = tensor.get_entry(tensor.entry_loc(i, is_batch=True))
-                s = self.get_entry(self.entry_loc(i, is_batch=True))
+            for i in range(math.prod(self.shape[:-2])):
+                t = tensor._get_entry(tensor._entry_loc(i, is_batch=True))
+                s = self._get_entry(self.entry_loc(i, is_batch=True))
                 x_dim, y_dim = self.shape[-2:]
                 for x in range(x_dim):
                     for y in range(y_dim):
@@ -93,16 +94,16 @@ class Tensor():
         return tensor
     
    
-    def _unary_op(self, op):
+    def unary_op(self, op):
         tensor = Tensor([], self.shape)
         for i in range(self.num_entries):        
-            loc = self.entry_loc(i)
-            x = self.get_entry(loc)
-            tensor.set_entry(loc, op(x))
+            loc = self._entry_loc(i)
+            x = self._get_entry(loc)
+            tensor._set_entry(loc, op(x))
         return tensor
             
     
-    def _binary_op(self, tensor, op):
+    def binary_op(self, tensor, op):
         ops = {
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
@@ -110,15 +111,15 @@ class Tensor():
             '/': lambda x, y: x / y,
         }
         tensor = Tensor([], self.shape)
-        if (self.shape_compatible(tensor, 'binary') or 
-            self.shape_broadcastable(tensor, 'binary')): 
+        if (self._shape_compatible(tensor, 'binary') or 
+            self._shape_broadcastable(tensor, 'binary')): 
             mod = min(self.entries, tensor.entries)
             total_entries = max(self.entries, tensor.entries)
             for i in range(total_entries):
-                x = self.get_entry(self.entry_loc(i % mod))
-                y = self.get_entry(self.entry_loc(i % mod)) 
+                x = self._get_entry(self._entry_loc(i % mod))
+                y = self._get_entry(self._entry_loc(i % mod)) 
                 output = ops[op](x, y) 
-                tensor.set_entry(self.entry_loc(i), output)   
+                tensor.set_entry(self._entry_loc(i), output)   
         else:
             raise ValueError(f'''incompatible shapes for binary op: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
         
@@ -135,17 +136,17 @@ class Tensor():
             x_dim, y_dim = t.shape[-2:]
             for x in range(x_dim):
                 for y in range(y_dim):
-                    current_batch[x][y] = self.dot_product(tensor1[x], tensor2[y])
+                    current_batch[x][y] = self._dot_product(tensor1[x], tensor2[y])
               
-        if self.shape_compatible(tensor2, 'matmul'):
+        if self._shape_compatible(tensor2, 'matmul'):
             t = Tensor([], self.shape[:-2] + [self.shape[-2], tensor2.shape[-1]])
             tensor2 = tensor2.transpose
   
             if tensor2.order > 2:
-                for i in range(math.prod(tensor2.shape[:-2]):
-                    current_batch = t.get_entry(t.entry_loc(i, is_batch=True))
-                    t1 = self.get_entry(self.entry_loc(i, is_batch=True))
-                    t2 = tensor2.get_entry(tensor2.entry_loc(i, is_batch=True))
+                for i in range(math.prod(tensor2.shape[:-2])):
+                    current_batch = t._get_entry(t.entry_loc(i, is_batch=True))
+                    t1 = self._get_entry(self._entry_loc(i, is_batch=True))
+                    t2 = tensor2.get_entry(tensor2._entry_loc(i, is_batch=True))
                     matmul_helper(t1, t2)
             else:
                 current_batch = t.tensor
@@ -155,6 +156,4 @@ class Tensor():
             return t
    
         else:
-            raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}'
-
-
+            raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
