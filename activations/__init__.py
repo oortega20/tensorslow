@@ -1,3 +1,2 @@
-from tensorslow import activations
-from tensorslow import sigmoid
+from activations.sigmoid import Sigmoid
 

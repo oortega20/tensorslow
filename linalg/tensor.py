@@ -30,13 +30,14 @@ class Tensor():
         elif op == 'matmul':
             self_output_dim = self.shape[-1]
             tensor_input_dim = tensor.shape[-2]
-            return self.order >= 2 and
-                   self.order == tensor.order and
-                   self.shape[:-2] == self.shape[:-2] and
-                   self_output_dim == tensor_input_dim
+            return (self.order >= 2 and
+                    self.order == tensor.order and
+                    self.shape[:-2] == self.shape[:-2] and
+                    self_output_dim == tensor_input_dim)
         return False
 
     def _shape_broadcastable(self, tensor):
+        #TODO: implement this using the general rule
         return False
  
     def _set_entry(self, entry_loc, entry):
@@ -57,14 +58,18 @@ class Tensor():
  
     def _shape_tensor(self):
         def build_tensor(data, shape):
-            return [build_tensor(data, shape[1:]) for i in range(shape[0])] if shape else 0.0
+            if self.init:
+                if self.init == 'zeros':
+                    entries = 0.0
+                elif self.init == 'ones':
+                    entries = 1.0
+            return [build_tensor(data, shape[1:]) for i in range(shape[0])] if shape else entries
             
-        self.tensor = build_tensor(self.data, self.shape)
-        
-        if self.tensor:
-            num_entries = min(len(self.data), self.num_entries())
-            for i in range(self.num_entries()):
+        tensor = build_tensor(self.data, self.shape)
+        if self.data: 
+            for i in range(self.num_entries):
                 self.set_entry(self.entry_loc(i), self.data[i]) 
+            
         return self.tensor
 
         
@@ -105,8 +110,8 @@ class Tensor():
             '/': lambda x, y: x / y,
         }
         tensor = Tensor([], self.shape)
-        if self.shape_compatible(tensor, 'binary') or 
-           self.shape_broadcastable(tensor, 'binary'): 
+        if (self.shape_compatible(tensor, 'binary') or 
+            self.shape_broadcastable(tensor, 'binary')): 
             mod = min(self.entries, tensor.entries)
             total_entries = max(self.entries, tensor.entries)
             for i in range(total_entries):
@@ -137,7 +142,7 @@ class Tensor():
             tensor2 = tensor2.transpose
   
             if tensor2.order > 2:
-                for i in range(t.num_entries(is_batch=True)):
+                for i in range(math.prod(tensor2.shape[:-2]):
                     current_batch = t.get_entry(t.entry_loc(i, is_batch=True))
                     t1 = self.get_entry(self.entry_loc(i, is_batch=True))
                     t2 = tensor2.get_entry(tensor2.entry_loc(i, is_batch=True))
