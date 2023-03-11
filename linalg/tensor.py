@@ -7,7 +7,26 @@ class Tensor():
         self.data = data
         self.init = init
         self.tensor = self._shape_tensor() if shape else []
-    
+
+
+    def __add__(self, t):
+        return self.binary_op('+', t)
+
+
+    def __sub__(self, t):
+        return self.binary_op('-', t)
+
+
+    def __mul__(self, t):
+        return self.binary_op('*', t)
+
+
+    def __truediv__(self, t):
+        return self.binary_op('/', t)
+
+    def __matmul__(self, t):
+        return self.matmul(t)
+ 
     @property
     def order(self):
         return len(self.shape)
@@ -66,7 +85,7 @@ class Tensor():
                     entries = 1.0
             return [build_tensor(data, shape[1:]) for i in range(shape[0])] if shape else entries
             
-        tensor = build_tensor(self.data, self.shape)
+        self.tensor = build_tensor(self.data, self.shape)
         if self.data: 
             for i in range(self.num_entries):
                 self._set_entry(self._entry_loc(i), self.data[i]) 
