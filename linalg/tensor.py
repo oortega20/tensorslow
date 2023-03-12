@@ -2,6 +2,8 @@ import math
 from typing import Union, List
 
 class Tensor():
+    op_error_msg = lambda op, t1, t2: 'unsupported operation: {op}(t1}, {t2})'
+    precision = 3
     def __init__(self, data: List[Union[int, float]], shape: List[int], init: str=''):
         self.shape = shape
         self.data = data
@@ -10,27 +12,49 @@ class Tensor():
 
 
     def __add__(self, t):
-        return self.binary_op('+', t)
+        if isinstance(t, Tensor):
+            return self.binary_op('+', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: x + t)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
 
 
     def __sub__(self, t):
-        return self.binary_op('-', t)
+        if isinstance(t, Tensor):
+            return self.binary_op('-', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: x - t)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
 
 
     def __mul__(self, t):
-        return self.binary_op('*', t)
+        if isinstance(t, Tensor):
+            return self.binary_op('*', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: x * t)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
 
 
     def __truediv__(self, t):
-        return self.binary_op('/', t)
+        if isinstance(t, Tensor):
+            return self.binary_op('/', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: x / t)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
+
 
     def __matmul__(self, t):
         return self.matmul(t)
 
     def __repr__(self):
+        precision = self.precision
         def repr_helper(t, shape, levels):
             if len(shape) == 1:
-                return str(t)
+                return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
             else:
                 prefix, suffix = '[', ']'
                 rep_str = ''
@@ -47,9 +71,10 @@ class Tensor():
         return 'Tensor(' + repr_helper(self.tensor, self.shape, 0) + ')'
 
     def __str__(self):
+        precision = self.precision
         def str_helper(t, shape, levels):
             if len(shape) == 1:
-                return str(t)
+                return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
             else:
                 prefix, suffix = '[', ']'
                 rep_str = ''
@@ -215,9 +240,3 @@ class Tensor():
         else:
             raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
 
-a = Tensor(list(range(6)), (3,2))
-print(a)
-
-a = Tensor(list(range(12)), (2,3,2))
-print(str(a))
-print(repr(a))
