@@ -26,7 +26,46 @@ class Tensor():
 
     def __matmul__(self, t):
         return self.matmul(t)
+
+    def __repr__(self):
+        def repr_helper(t, shape, levels):
+            if len(shape) == 1:
+                return str(t)
+            else:
+                prefix, suffix = '[', ']'
+                rep_str = ''
+                for i, elem in enumerate(t):
+                    if i == 0:
+                        rep_str += repr_helper(elem, shape[1:], levels+1)
+                    else:
+                        rep_str += ' ' * (levels + 1 + len('Tensor(')) + repr_helper(elem, shape[1:], levels+1)  
+
+                    if i < len(t) - 1:
+                        rep_str += '\n'
+                return prefix + rep_str + suffix
+             
+        return 'Tensor(' + repr_helper(self.tensor, self.shape, 0) + ')'
+
+    def __str__(self):
+        def str_helper(t, shape, levels):
+            if len(shape) == 1:
+                return str(t)
+            else:
+                prefix, suffix = '[', ']'
+                rep_str = ''
+                for i, elem in enumerate(t):
+                    if i == 0:
+                        rep_str += str_helper(elem, shape[1:], levels+1)
+                    else:
+                        rep_str += ' ' * (levels + 1) + str_helper(elem, shape[1:], levels+1)  
+
+                    if i < len(t) - 1:
+                        rep_str += '\n'
+                return prefix + rep_str + suffix
+        return str_helper(self.tensor, self.shape, 0)
  
+
+
     @property
     def order(self):
         return len(self.shape)
@@ -34,7 +73,8 @@ class Tensor():
     @property    
     def num_entries(self): 
         return math.prod(self.shape)
-    
+
+
     def _entry_loc(self, entry_num, is_batch=False):
         entry_loc = []
         dims = self.shape[:-2][::-1] if is_batch else self.shape[::-1]
@@ -105,7 +145,7 @@ class Tensor():
         else:
             for i in range(math.prod(self.shape[:-2])):
                 t = tensor._get_entry(tensor._entry_loc(i, is_batch=True))
-                s = self._get_entry(self.entry_loc(i, is_batch=True))
+                s = self._get_entry(self._entry_loc(i, is_batch=True))
                 x_dim, y_dim = self.shape[-2:]
                 for x in range(x_dim):
                     for y in range(y_dim):
@@ -154,7 +194,6 @@ class Tensor():
             x_dim, y_dim = t.shape[-2:]
             for x in range(x_dim):
                 for y in range(y_dim):
-                    p)
                     current_batch[x][y] = _dot_product(tensor1[x], tensor2[y])
 
         if self._shape_compatible(tensor2, 'matmul'):
@@ -175,3 +214,10 @@ class Tensor():
    
         else:
             raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
+
+a = Tensor(list(range(6)), (3,2))
+print(a)
+
+a = Tensor(list(range(12)), (2,3,2))
+print(str(a))
+print(repr(a))
