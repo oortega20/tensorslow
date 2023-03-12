@@ -1,7 +1,6 @@
-from tensorslow.activation import Activation
+from tensorslow.linalg import Tensor
 
-
-class Relu(Activation):
+class Relu(activations.Activation):
     op = lambda x: x if x > 0 else 0  
     def __init__(): 
         super.__init__(op)
@@ -9,4 +8,3 @@ class Relu(Activation):
     def backward(self, dout: Tensor) -> Tensor:
         dout = self.grad
         return dout 
-
