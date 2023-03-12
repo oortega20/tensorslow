@@ -20,6 +20,10 @@ class Tensor():
             raise TypeError(op_error_msg(op, self, t))
 
 
+    def __radd__(self, t):
+        return self.__add__(t)
+
+
     def __sub__(self, t):
         if isinstance(t, Tensor):
             return self.binary_op('-', t)
@@ -27,6 +31,10 @@ class Tensor():
             return self.unary_op(lambda x: x - t)
         else:
             raise TypeError(op_error_msg(op, self, t))
+
+
+    def __rsub__(self, t):
+        return self.__sub__(t)
 
 
     def __mul__(self, t):
@@ -38,6 +46,10 @@ class Tensor():
             raise TypeError(op_error_msg(op, self, t))
 
 
+    def __rmul__(self, t):
+        return self.__mul__(t)
+
+
     def __truediv__(self, t):
         if isinstance(t, Tensor):
             return self.binary_op('/', t)
@@ -47,8 +59,13 @@ class Tensor():
             raise TypeError(op_error_msg(op, self, t))
 
 
+    def __rtruediv__(self, t):
+        return self.__truediv__(t)
+
+
     def __matmul__(self, t):
         return self.matmul(t)
+
 
     def __repr__(self):
         precision = self.precision
