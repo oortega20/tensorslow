@@ -17,8 +17,7 @@ python -m pip install -e tensorslow
 ```
 
 # Try your first Tensorslow Program
-
-Forward pass of simple dense layer with `input=3`, `weight=3`, and `bias=1` 
+Some fun matrix manipulations with tensorslow's linear-algebra package 
 ```python
 >>> from tensorslow.linalg import Tensor
 >>> x = Tensor(list(range(6)), (2,3))
