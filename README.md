@@ -17,12 +17,24 @@ python -m pip install -e tensorslow
 ```
 
 # Try your first Tensorslow Program
-
-Forward pass of simple dense layer with `input=3`, `weight=3`, and `bias=1` 
+Some fun matrix manipulations with tensorslow's linear-algebra package 
 ```python
->>> from tensorslow.layers import Dense
-
->>> x = Dense([3], [3], [1])
->>> x.forward()
-10
+>>> from tensorslow.linalg import Tensor
+>>> x = Tensor(list(range(6)), (2,3))
+>>> x
+Tensor([[0.000 1.000 2.000]
+        [3.000 4.000 5.000]])
+>>> x @ x.T
+Tensor([[5.000 14.000]
+        [14.000 50.000]])
+>>> x.T @ x
+Tensor([[9.000 12.000 15.000]
+        [12.000 17.000 22.000]
+        [15.000 22.000 29.000]])
+>>> x - 3
+Tensor([[-3.000 -2.000 -1.000]
+        [0.000 1.000 2.000]])
+>>> 0 * x
+Tensor([[0.000 0.000 0.000]
+        [0.000 0.000 0.000]])
 ```
