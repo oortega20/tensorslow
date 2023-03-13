@@ -9,6 +9,7 @@ class Layer(ABC):
 
     @abstractmethod
     def forward(self, x: Tensor) -> Tensor:
+        self.x = x
         pass
 
     @abstractmethod
