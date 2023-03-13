@@ -4,14 +4,17 @@ from abc import abstractmethod
 from tensorslow.linalg import Tensor
 
 class Activation(ABC):
-    def __init__(fn):
+    def __init__(self, fn):
         self.function = fn 
         self.grad = None
 
     def forward(self, x: Tensor) -> Tensor: 
-        out = x.apply_unary(self.function)
+        out = x.unary_op(self.function)
         self.grad = Tensor([], x.shape, init='ones')
         return out
+
+    def __call__(self, x: Tensor) -> Tensor:
+        return self.forward(x)
 
     @abstractmethod
     def backward(self, dout:Tensor) -> Tensor:

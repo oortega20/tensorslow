@@ -210,20 +210,18 @@ class Tensor():
             '*': lambda x, y: x * y,
             '/': lambda x, y: x / y,
         }
-        tensor = Tensor([], self.shape)
+        result = Tensor([], self.shape)
         if (self._shape_compatible(tensor, 'binary') or 
             self._shape_broadcastable(tensor, 'binary')): 
-            mod = min(self.num_entries, tensor.num_entries)
-            total_entries = max(self.num_entries, tensor.num_entries)
-            for i in range(total_entries):
-                x = self._get_entry(self._entry_loc(i % mod))
-                y = self._get_entry(self._entry_loc(i % mod)) 
+            for i in range(self.num_entries):
+                x = self._get_entry(self._entry_loc(i))
+                y = tensor._get_entry(tensor._entry_loc(i)) 
                 output = ops[op](x, y) 
-                tensor._set_entry(self._entry_loc(i), output)   
+                result._set_entry(self._entry_loc(i), output)   
         else:
             raise ValueError(f'''incompatible shapes for binary op: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
         
-        return tensor
+        return result
 
 
     def matmul(self, tensor2):
