@@ -2,10 +2,11 @@ from tensorslow.linalg import Tensor
 from tensorslow.activations import Activation
 
 class Relu():
-    op = lambda x: x if x > 0 else 0  
+    f_x = lambda x: x if x > 0 else 0  
+    df_x = lambda x: 1 if x > 0 else 0
     def __init__(): 
-        super.__init__(op)
+        super.__init__(fn)
 
     def backward(self, dout: Tensor) -> Tensor:
-        dout = self.grad
+        self.grad = dout.unary_op(df_x)
         return dout 
