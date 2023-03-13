@@ -50,13 +50,14 @@ A simple demonstration of forward propagation with Tensorslow's available layers
 Tensor([[0.000 1.000 2.000]
         [3.000 4.000 5.000]])
 >>> act = Relu()
->>> f = Dense('ones', 'ones', (3,3))
+>>> f = Dense(in_shape=(2,3), out_dims=3)
 >>> f.w
 Tensor([[1.000 1.000 1.000]
         [1.000 1.000 1.000]
         [1.000 1.000 1.000]])
 >>> f.b
-Tensor([1.000 1.000 1.000])
+Tensor([[1.000 1.000 1.000]
+        [1.000 1.000 1.000]])
 >>> out = act(f(x))
 >>> out
 Tensor([[4.000 4.000 4.000]
