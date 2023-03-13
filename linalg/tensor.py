@@ -138,9 +138,21 @@ class Tensor():
         return False
 
     def _shape_broadcastable(self, tensor):
-        #TODO: implement this using the general rule
-        return False
- 
+        if self.order < tensor.order:
+            broadcast_shape = (1,) * (tensor.order - self.order) + self.shape
+            shape = self.shape 
+        if tensor.order < self.order:
+            broadcast_shape = (1,) * (self.order - tensor.order) + tensor.shape
+            shape = self.shape 
+        for i in range(len(shape), -1):
+            b_i, s_i = broadcast_shape[i], shape[i]
+            if (broadcast_shape[i] != shape[i] and
+                broadcase_shape[i] != 1):
+                return False
+        return True
+        
+
+
     def _set_entry(self, entry_loc, entry):
         def set_helper(tensor, entry_loc, entry):
             if len(entry_loc) == 1:
@@ -210,14 +222,21 @@ class Tensor():
             '*': lambda x, y: x * y,
             '/': lambda x, y: x / y,
         }
-        result = Tensor([], self.shape)
         if (self._shape_compatible(tensor, 'binary') or 
-            self._shape_broadcastable(tensor, 'binary')): 
-            for i in range(self.num_entries):
-                x = self._get_entry(self._entry_loc(i))
-                y = tensor._get_entry(tensor._entry_loc(i)) 
+            self._shape_broadcastable(tensor)): 
+            broadcast_self = 1 if self.num_entries < tensor.num_entries else 0
+            shape = self.shape if not broadcast_self else tensor.shape
+            result = Tensor([], shape)
+            total_entries = max(self.num_entries, tensor.num_entries)
+            broadcast = min(self.num_entries, tensor.num_entries)
+            for i in range(total_entries):
+                x_i = i % broadcast if broadcast_self else i
+                y_i = i % broadcast if not broadcast_self else i
+                x = self._get_entry(self._entry_loc(x_i))
+                y = tensor._get_entry(tensor._entry_loc(y_i)) 
                 output = ops[op](x, y) 
-                result._set_entry(self._entry_loc(i), output)   
+                r_i = y_i if broadcast_self else x_i
+                result._set_entry(result._entry_loc(r_i), output)   
         else:
             raise ValueError(f'''incompatible shapes for binary op: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
         

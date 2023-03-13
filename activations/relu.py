@@ -10,5 +10,5 @@ class Relu(Activation):
         super().__init__(f_x)
 
     def backward(self, dout: Tensor) -> Tensor:
-        self.grad = dout.unary_op(df_x)
+        self.grad = self.x.unary_op(df_x)
         return self.grad * dout 

@@ -6,7 +6,7 @@ from tensorslow.linalg import Tensor
 class Activation(ABC):
     def __init__(self, fn):
         self.function = fn 
-        self.grad = None
+        self.x = None
 
     def forward(self, x: Tensor) -> Tensor: 
         out = x.unary_op(self.function)
@@ -14,6 +14,7 @@ class Activation(ABC):
         return out
 
     def __call__(self, x: Tensor) -> Tensor:
+        self.x = x
         return self.forward(x)
 
     @abstractmethod
