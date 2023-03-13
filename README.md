@@ -16,7 +16,7 @@ To install the current release of Tensorslow
 python -m pip install -e tensorslow
 ```
 
-# Try your first Tensorslow Program
+# Try some simple Tensorslow Programs
 Some fun matrix manipulations with tensorslow's linear-algebra package 
 ```python
 >>> from tensorslow.linalg import Tensor
@@ -37,4 +37,29 @@ Tensor([[-3.000 -2.000 -1.000]
 >>> 0 * x
 Tensor([[0.000 0.000 0.000]
         [0.000 0.000 0.000]])
+```
+A simple demonstration of forward propagation with Tensorslow's activations
+
+```python
+>>> from tensorslow.linalg import Tensor
+>>> from tensorslow.activations import Relu
+>>> from tensorslow.layers import Dense
+>>>
+>>> x = Tensor(list(range(6)), (2,3))
+>>> x
+Tensor([[0.000 1.000 2.000]
+        [3.000 4.000 5.000]])
+>>> act = Relu()
+>>> f = Dense('ones', 'ones', (3,3))
+>>> f.w
+Tensor([[1.000 1.000 1.000]
+        [1.000 1.000 1.000]
+        [1.000 1.000 1.000]])
+>>> f.b
+Tensor([1.000 1.000 1.000])
+>>> out = act(f(x))
+>>> out
+Tensor([[4.000 4.000 4.000]
+        [13.000 13.000 13.000]])
+>>>
 ```
