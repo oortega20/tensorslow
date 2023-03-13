@@ -38,7 +38,7 @@ Tensor([[-3.000 -2.000 -1.000]
 Tensor([[0.000 0.000 0.000]
         [0.000 0.000 0.000]])
 ```
-A simple demonstration of forward propagation with Tensorslow's activations
+A simple demonstration of forward propagation with Tensorslow's available layers and activations
 
 ```python
 >>> from tensorslow.linalg import Tensor
