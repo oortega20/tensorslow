@@ -34,7 +34,14 @@ class Tensor():
 
 
     def __rsub__(self, t):
-        return self.__sub__(t)
+        if isinstance(t, Tensor):
+            return self.binary_op('-', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: t - x)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
+
+
 
 
     def __mul__(self, t):
@@ -60,12 +67,26 @@ class Tensor():
 
 
     def __rtruediv__(self, t):
-        return self.__truediv__(t)
+        if isinstance(t, Tensor):
+            return self.binary_op('/', t)
+        elif isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: t / x)
+        else:
+            raise TypeError(op_error_msg(op, self, t))
 
 
     def __matmul__(self, t):
         return self.matmul(t)
 
+    def __pow__(self, t):
+        if isinstance(t, int):
+            print(t, 'is this neg')
+            result = Tensor([], init='ones', shape=self.shape)
+            for _ in range(abs(t)):
+                result = result * self  
+            return result if t >= 0 else 1 / result
+        else:
+            raise TypeError(op_error_msg('**', self, t))
 
     def __repr__(self):
         precision = self.precision
