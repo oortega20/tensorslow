@@ -154,6 +154,7 @@ class Tensor():
 
 
     def _shape_broadcastable(self, tensor):
+        shape = self.shape
         if self.order < tensor.order:
             broadcast_shape = (1,) * (tensor.order - self.order) + self.shape
             shape = self.shape 
@@ -292,7 +293,7 @@ class Tensor():
     def _agg(self, method: str, axis=None):
         agg_ops = {
             'sum': sum,
-            'min': max,
+            'max': max,
             'min': min,
             'mean': lambda x: sum(x) / len(x)
         }
@@ -321,7 +322,7 @@ class Tensor():
 
 
     def max(self, axis=None):
-        return self._agg('min', axis=axis)
+        return self._agg('max', axis=axis)
 
 
     def min(self, axis=None):
