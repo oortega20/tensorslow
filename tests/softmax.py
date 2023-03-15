@@ -1,5 +1,7 @@
+import os
 import numpy as np
 
+os.system('py -m pip install -e https://github.com/oortega20/tensorslow.git')
 from tensorslow.activations import Softmax
 from tensorslow.linalg import Tensor
 def softmax(z):
@@ -18,5 +20,5 @@ r = softmax(x1)
 
 s = Softmax()
 
-x = Tensor(list(range(12)), (3,4))
+x = Tensor(list(range(12)), (3, 4))
 s(x)
