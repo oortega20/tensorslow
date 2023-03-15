@@ -87,44 +87,27 @@ class Tensor():
         else:
             raise TypeError(op_error_msg('**', self, t))
 
-    def __repr__(self):
+    def _print_helper(self, t, shape, levels, inden):
         precision = self.precision
-        def repr_helper(t, shape, levels):
-            if len(shape) == 1:
-                return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
-            else:
-                prefix, suffix = '[', ']'
-                rep_str = ''
-                for i, elem in enumerate(t):
-                    if i == 0:
-                        rep_str += repr_helper(elem, shape[1:], levels+1)
-                    else:
-                        rep_str += ' ' * (levels + 1 + len('Tensor(')) + repr_helper(elem, shape[1:], levels+1)  
+        if len(shape) == 1:
+            return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
+        else:
+            prefix, suffix = '[', ']'
+            rep_str = ''
+            for i, elem in enumerate(t):
+                if i == 0:
+                    rep_str += self._print_helper(elem, shape[1:], levels+1, inden)
+                else:
+                    rep_str += ' ' * (levels + 1 + inden) + self._print_helper(elem, shape[1:], levels+1, inden)  
+                if i < len(t) - 1:
+                    rep_str += '\n'
+            return prefix + rep_str + suffix
 
-                    if i < len(t) - 1:
-                        rep_str += '\n'
-                return prefix + rep_str + suffix
-             
-        return 'Tensor(' + repr_helper(self.tensor, self.shape, 0) + ')'
+    def __repr__(self): 
+        return 'Tensor(' + self._print_helper(self.tensor, self.shape, 0, len('Tensor(')) + ')'
 
     def __str__(self):
-        precision = self.precision
-        def str_helper(t, shape, levels):
-            if len(shape) == 1:
-                return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
-            else:
-                prefix, suffix = '[', ']'
-                rep_str = ''
-                for i, elem in enumerate(t):
-                    if i == 0:
-                        rep_str += str_helper(elem, shape[1:], levels+1)
-                    else:
-                        rep_str += ' ' * (levels + 1) + str_helper(elem, shape[1:], levels+1)  
-
-                    if i < len(t) - 1:
-                        rep_str += '\n'
-                return prefix + rep_str + suffix
-        return str_helper(self.tensor, self.shape, 0)
+        return self._print_helper(self.tensor, self.shape, 0, 0)
  
 
 
