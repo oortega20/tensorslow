@@ -1,14 +1,14 @@
 import os
 import numpy as np
 
-os.system('py -m pip install -e https://github.com/oortega20/tensorslow.git')
+os.system('py -m pip install -e ../../tensorslow')
 from tensorslow.activations import Softmax
 from tensorslow.linalg import Tensor
 def softmax(z):
     assert len(z.shape) == 2
     s = np.max(z, axis=1)
     s = np.expand_dims(s, axis=1)
-    print(z - s, (z - s).shape)
+    print(z - s)
     e_x = np.exp(z - s)
     div = np.sum(e_x, axis=1)
     div = np.expand_dims(div, axis=1)

@@ -18,7 +18,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x + t)
         else:
-            raise TypeError(op_error_msg('+', self, t))
+            raise TypeError(self.op_error_msg('+', self, t))
 
 
     def __radd__(self, t):
@@ -31,7 +31,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x - t)
         else:
-            raise TypeError(op_error_msg('-', self, t))
+            raise TypeError(self.op_error_msg('-', self, t))
 
 
     def __rsub__(self, t):
@@ -40,7 +40,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: t - x)
         else:
-            raise TypeError(op_error_msg('-', self, t))
+            raise TypeError(self.op_error_msg('-', self, t))
 
 
 
@@ -51,7 +51,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x * t)
         else:
-            raise TypeError(op_error_msg('*', self, t))
+            raise TypeError(self.op_error_msg('*', self, t))
 
 
     def __rmul__(self, t):
@@ -64,7 +64,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x / t)
         else:
-            raise TypeError(op_error_msg('/', self, t))
+            raise TypeError(self.op_error_msg('/', self, t))
 
 
     def __rtruediv__(self, t):
@@ -73,7 +73,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: t / x)
         else:
-            raise TypeError(op_error_msg('/', self, t))
+            raise TypeError(self.op_error_msg('/', self, t))
 
 
     def __matmul__(self, t):
@@ -87,13 +87,13 @@ class Tensor():
                 result = result * self  
             return result if t >= 0 else 1 / result
         else:
-            raise TypeError(op_error_msg('**', self, t))
+            raise TypeError(self.op_error_msg('**', self, t))
 
     def __rpow__(self, t):
         if isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: t ** x)
         else:
-            raise TypeError(op_error_msg('**', self, t))
+            raise TypeError(self.op_error_msg('**', self, t))
 
 
     def _print_helper(self, t, shape, levels, inden):
@@ -164,7 +164,7 @@ class Tensor():
         for i in range(len(shape), -1):
             b_i, s_i = broadcast_shape[i], shape[i]
             if (broadcast_shape[i] != shape[i] and
-                broadcase_shape[i] != 1):
+                broadcast_shape[i] != 1):
                 return False
         return True
         
