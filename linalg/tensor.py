@@ -80,7 +80,6 @@ class Tensor():
 
     def __pow__(self, t):
         if isinstance(t, int):
-            print(t, 'is this neg')
             result = Tensor([], init='ones', shape=self.shape)
             for _ in range(abs(t)):
                 result = result * self  
@@ -294,4 +293,48 @@ class Tensor():
    
         else:
             raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
+
+
+    def _agg(self, method: str, axis=None):
+        agg_ops = {
+            'sum': sum,
+            'min': max,
+            'min': min,
+            'mean': lambda x: sum(x) / len(x)
+        }
+        if not self.order == 2:
+            raise NotImplementedError(f'''have only created aggregation for tensors of order 2: self.shape {tensor2.shape}''')
+
+        if axis is None:
+            accum = list()
+            for _ in range(self.num_entries): 
+                entry = self._get_entry(self._entry_loc(_))
+                accum.append(entry)
+            return agg_ops[method](accum)
+        else:
+            new_shape = self.shape[:axis] + self.shape[axis + 1:]
+            result = Tensor([], new_shape)
+            copy_tensor = self.T if axis == 0 else self
+            x_dim, _ = copy_tensor.shape
+            for x in range(x_dim):
+                row = copy_tensor.tensor[x]
+                result.tensor[x] = agg_ops[method](row)
+            return result
+
+   
+
+    def sum(self, axis=None):
+        return self._agg('sum', axis=axis)
+
+
+    def max(self, axis=None):
+        return self._agg('min', axis=axis)
+
+
+    def min(self, axis=None):
+        return self._agg('min', axis=axis)
+
+
+    def mean(self, axis=None):
+        return self._agg('mean', axis=axis)
 
