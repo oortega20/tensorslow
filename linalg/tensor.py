@@ -1,4 +1,5 @@
 import math
+from iteration_utilities import deepflatten
 from typing import Union, List
 
 class Tensor():
@@ -17,7 +18,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x + t)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('+', self, t))
 
 
     def __radd__(self, t):
@@ -30,7 +31,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x - t)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('-', self, t))
 
 
     def __rsub__(self, t):
@@ -39,7 +40,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: t - x)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('-', self, t))
 
 
 
@@ -50,7 +51,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x * t)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('*', self, t))
 
 
     def __rmul__(self, t):
@@ -63,7 +64,7 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: x / t)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('/', self, t))
 
 
     def __rtruediv__(self, t):
@@ -72,11 +73,12 @@ class Tensor():
         elif isinstance(t, float) or isinstance(t, int):
             return self.unary_op(lambda x: t / x)
         else:
-            raise TypeError(op_error_msg(op, self, t))
+            raise TypeError(op_error_msg('/', self, t))
 
 
     def __matmul__(self, t):
         return self.matmul(t)
+
 
     def __pow__(self, t):
         if isinstance(t, int):
@@ -86,6 +88,13 @@ class Tensor():
             return result if t >= 0 else 1 / result
         else:
             raise TypeError(op_error_msg('**', self, t))
+
+    def __rpow__(self, t):
+        if isinstance(t, float) or isinstance(t, int):
+            return self.unary_op(lambda x: t ** x)
+        else:
+            raise TypeError(op_error_msg('**', self, t))
+
 
     def _print_helper(self, t, shape, levels, inden):
         precision = self.precision
@@ -103,18 +112,20 @@ class Tensor():
                     rep_str += '\n'
             return prefix + rep_str + suffix
 
+
     def __repr__(self): 
         return 'Tensor(' + self._print_helper(self.tensor, self.shape, 0, len('Tensor(')) + ')'
+
 
     def __str__(self):
         return self._print_helper(self.tensor, self.shape, 0, 0)
  
 
-
     @property
     def order(self):
         return len(self.shape)
-        
+
+
     @property    
     def num_entries(self): 
         return math.prod(self.shape)
@@ -127,7 +138,8 @@ class Tensor():
             entry_loc = [entry_num % elem] + entry_loc
             entry_num  = entry_num // elem        
         return entry_loc
-    
+
+
     def _shape_compatible(self, tensor, op: str) -> bool:
         if op == 'binary':
             return self.shape == tensor.shape
@@ -139,6 +151,7 @@ class Tensor():
                     self.shape[:-2] == self.shape[:-2] and
                     self_output_dim == tensor_input_dim)
         return False
+
 
     def _shape_broadcastable(self, tensor):
         if self.order < tensor.order:
@@ -154,7 +167,6 @@ class Tensor():
                 return False
         return True
         
-
 
     def _set_entry(self, entry_loc, entry):
         def set_helper(tensor, entry_loc, entry):
@@ -185,8 +197,7 @@ class Tensor():
         self.tensor = build_tensor(self.data, self.shape)
         if self.data: 
             for i in range(self.num_entries):
-                self._set_entry(self._entry_loc(i), self.data[i]) 
-            
+                self._set_entry(self._entry_loc(i), self.data[i])             
         return self.tensor
 
         
@@ -304,7 +315,6 @@ class Tensor():
                 result.tensor[x] = agg_ops[method](row)
             return result
 
-   
 
     def sum(self, axis=None):
         return self._agg('sum', axis=axis)
@@ -320,4 +330,18 @@ class Tensor():
 
     def mean(self, axis=None):
         return self._agg('mean', axis=axis)
+
+    def expand_dims(self, axis=0):
+        elems = list(deepflatten(self.tensor))
+        if axis == 0:
+            new_shape = (1,) + self.shape
+        elif axis == self.order:
+            new_shape = self.shape + (1,)
+        elif axis < self.order:
+            new_shape = self.shape[:axis] + (1,) + self.shape[axis:]
+        else:
+            raise ValueError(f'Invalid axis chosen for fn: expand_dims - axis: {axis}')
+        return Tensor(elems, new_shape)
+
+
 
