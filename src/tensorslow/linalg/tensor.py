@@ -354,6 +354,9 @@ class Tensor():
             raise ValueError(f'Invalid axis chosen for fn: expand_dims - axis: {axis}')
         return Tensor(elems, new_shape)
 
+    def abs(self):
+        return self.unary_op(lambda x: abs(x))
+
     @classmethod
     def diagflat(cls, data: list):
         t_shape = (len(data),) * 2

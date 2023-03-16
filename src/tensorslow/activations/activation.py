@@ -1,7 +1,7 @@
 from abc import ABC
-from abc import abstractmethod
 
 from tensorslow.linalg import Tensor
+
 
 class Activation(ABC):
     def __init__(self, fn, d_fn):
@@ -18,6 +18,6 @@ class Activation(ABC):
         self.x = x
         return self.forward(x)
 
-    def backward(self, dout:Tensor) -> Tensor:
+    def backward(self, dout: Tensor) -> Tensor:
         grad = self.x.unary_op(self.derivative)
         return grad * dout 
