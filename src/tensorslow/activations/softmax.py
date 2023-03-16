@@ -23,8 +23,12 @@ class Softmax(Activation):
         if not dout.order == 2:
             raise ValueError('Softmax derivative only for tensors of order 2')
 
-        sm = Tensor.diagflat(list(deepflatten(self.x.tensor)))
-        return (sm - self.x @ self.x.T) @ dout
+        num_samples, _ = self.x.shape
+        grad = Tensor([], (num_samples, num_samples), init='zeros')
+        for n in range(num_samples):
+            sm = Tensor.diagflat(self.x.tensor[n])
+            grad += (sm - self.x @ self.x.T)
+        return grad @ dout
 
     def forward(self, x: Tensor) -> Tensor:
         self.x = self.function(x)
