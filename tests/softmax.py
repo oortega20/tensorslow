@@ -8,7 +8,6 @@ def softmax(z):
     assert len(z.shape) == 2
     s = np.max(z, axis=1)
     s = np.expand_dims(s, axis=1)
-    print(z - s)
     e_x = np.exp(z - s)
     div = np.sum(e_x, axis=1)
     div = np.expand_dims(div, axis=1)
@@ -21,4 +20,11 @@ r = softmax(x1)
 s = Softmax()
 
 x = Tensor(list(range(12)), (3, 4))
-s(x)
+s_t = s(x)
+s_t_backwards = s.backward(Tensor([], s_t.shape, init='ones'))
+s.__class__.precision = 7
+print(x1, 'numpy')
+print(x, 'tensorslow')
+print(r, 'numpy softmax')
+print(s_t, 'tensorslow softmax')
+print(s_t_backwards, 'tensorslow sm derivative')

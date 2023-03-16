@@ -15,6 +15,7 @@ class Activation(ABC):
         return out
 
     def __call__(self, x: Tensor) -> Tensor:
+        self.x = x
         return self.forward(x)
 
     def backward(self, dout:Tensor) -> Tensor:

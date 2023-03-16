@@ -155,6 +155,7 @@ class Tensor():
 
     def _shape_broadcastable(self, tensor):
         shape = self.shape
+        broadcast_shape = tensor.shape
         if self.order < tensor.order:
             broadcast_shape = (1,) * (tensor.order - self.order) + self.shape
             shape = self.shape 
@@ -163,8 +164,7 @@ class Tensor():
             shape = self.shape 
         for i in range(len(shape), -1):
             b_i, s_i = broadcast_shape[i], shape[i]
-            if (broadcast_shape[i] != shape[i] and
-                broadcast_shape[i] != 1):
+            if (b_i != s_i and b_i != 1 and s_i != 1):
                 return False
         return True
         
@@ -238,24 +238,34 @@ class Tensor():
             '/': lambda x, y: x / y,
         }
         if (self._shape_compatible(tensor, 'binary') or 
-            self._shape_broadcastable(tensor)): 
-            broadcast_self = 1 if self.num_entries < tensor.num_entries else 0
-            shape = self.shape if not broadcast_self else tensor.shape
-            result = Tensor([], shape)
-            total_entries = max(self.num_entries, tensor.num_entries)
-            broadcast = min(self.num_entries, tensor.num_entries)
-            for i in range(total_entries):
-                x_i = i % broadcast if broadcast_self else i
-                y_i = i % broadcast if not broadcast_self else i
-                x = self._get_entry(self._entry_loc(x_i))
-                y = tensor._get_entry(tensor._entry_loc(y_i)) 
-                output = ops[op](x, y) 
-                r_i = y_i if broadcast_self else x_i
-                result._set_entry(result._entry_loc(r_i), output)   
-        else:
-            raise ValueError(f'''incompatible shapes for binary op: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
-        
-        return result
+            self._shape_broadcastable(tensor)):
+            order_diff = max(self.order, tensor.order) - min(self.order, tensor.order)
+            if self.order < tensor.order:
+                min_shape = order_diff * (1,) + self.shape
+                max_shape = tensor.shape
+            else:
+                min_shape = order_diff * (1,) + tensor.shape
+                max_shape = self.shape
+
+            result_shape = tuple(map(max, zip(min_shape, max_shape)))
+            result = Tensor([], result_shape)
+            x_div, y_div = 1, 1
+            for min_i, max_i in zip(min_shape, max_shape):
+                if max_shape == self.shape:
+                    y_div = max_i * y_div if max_i > min_i else y_div
+                else:
+                    x_div = max_i * x_div if max_i > min_i else x_div
+
+            for i in range(result.num_entries):
+                x_i = self._entry_loc(i // x_div)
+                y_i = tensor._entry_loc(i // y_div)
+                x = self._get_entry(x_i)
+                y = tensor._get_entry(y_i)
+                entry = ops[op](x, y)
+                r_i = result._entry_loc(i)
+                result._set_entry(r_i, entry)
+
+            return result
 
 
     def matmul(self, tensor2):
@@ -343,6 +353,16 @@ class Tensor():
         else:
             raise ValueError(f'Invalid axis chosen for fn: expand_dims - axis: {axis}')
         return Tensor(elems, new_shape)
+
+    @classmethod
+    def diagflat(cls, data: list):
+        t_shape = (len(data),) * 2
+        new_data = [[0 for _ in range(len(data))] for _ in range(len(data))]
+        for i in range(len(new_data)):
+            new_data[i][i] = data[i]
+        return Tensor(list(deepflatten(new_data)), t_shape)
+
+
 
 
 
