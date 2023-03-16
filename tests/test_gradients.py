@@ -18,7 +18,7 @@ def gradient_check(x, epsilon=1e-7):
     # Check if gradapprox is close enough to backward propagation
     grad = s.backward(dout)
 
-    numerator = np.linalg.norm(grad - gradapprox)
+    numerator = np.linalg.norm((grad - gradapprox))
     denominator = np.linalg.norm(grad) + np.linalg.norm(gradapprox)
     difference = numerator / denominator
 
