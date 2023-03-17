@@ -5,7 +5,8 @@ from tensorslow.linalg import Tensor
 
 
 class Layer(ABC):
-    def __init__(self):
+    def __init__(self, name: str):
+        self.name = name
         self.weights = dict()
         self.grads = dict()
 

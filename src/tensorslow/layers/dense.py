@@ -3,7 +3,8 @@ from tensorslow.layers import Layer
 
 
 class Dense(Layer):
-    def __init__(self, in_dim=1, out_dim=1,  w_init='ones', b_init='ones'):
+    def __init__(self, name: str, in_dim=1, out_dim=1,  w_init='ones', b_init='ones'):
+        super().__init__(name)
         w = Tensor([], init=w_init, shape=(in_dim, out_dim))
         b = Tensor([], init=b_init, shape=(out_dim,))
         self.x = None
