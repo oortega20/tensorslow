@@ -1,5 +1,6 @@
 from tensorslow.optimizers import Optimizer
 from tensorslow.linalg import Tensor
+from tensorslow.layers import Layer
 
 
 class SGDNesterov(Optimizer):
@@ -8,7 +9,18 @@ class SGDNesterov(Optimizer):
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.velocities = dict()
+        for layer in model.layers():
+            if isinstance(layer, Layer):
+                self.velocities[layer.name] = dict()
+                for grad_name, grad in layer.grads.items():
+                    self.velocities[layer.name][grad_name] = Tensor([], grad.shape, init='zeros')
 
     def update_rule(self, layer):
-        pass
-
+        weights, grads, name = layer.weights, layer.grads, layer.name
+        for grad_name, grad in grads.items():
+            weight = weights[grad_name]
+            v = self.velocities[name][grad_name]
+            w_lookahead = weight - self.momentum * v
+            v_new = self.momentum * v + self.learning_rate * w_lookahead
+            weights[grad_name] = weight - v_new
+            self.velocities[name][grad_name] = v_new
