@@ -19,9 +19,8 @@ opt_m = SGD(mnist)
 opt_l1 = SGD(l1)
 opt_l2 = SGD(l2)
 num_iters = 100
-
+print('currently training an l1regressor, l2regressor, and an mnist model with a dummy sample data')
 for _ in range(num_iters):
-    print('currently training an l1regressor, l2regressor, and an mnist model with a dummy sample data')
     print(_, 'current iter')
     l1loss, l1grad = l1(x_regress, y_regress)
     l2loss, l2grad = l2(x_regress, y_regress)
@@ -32,4 +31,4 @@ for _ in range(num_iters):
     opt_m.update()
     opt_l2.update()
     opt_l1.update()
-    print(l1loss, l2loss, celoss, 'if the losses are going down, then we did bois, then tensorslow can now properly train models')
+    print(l1loss, l2loss, celoss, 'if the losses are going down, then we did bois, tensorslow trainss')
