@@ -336,6 +336,9 @@ class Tensor:
     def abs(self):
         return self.unary_op(lambda x: abs(x))
 
+    def sqrt(self):
+        return self.unary_op(lambda x: math.sqrt(x))
+
     @classmethod
     def diagflat(cls, data: list):
         t_shape = (len(data),) * 2

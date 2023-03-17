@@ -1,6 +1,5 @@
 from tensorslow.optimizers import Optimizer
 from tensorslow.models import Model
-from tensorslow.layers import Layer
 
 
 class SGD(Optimizer):
