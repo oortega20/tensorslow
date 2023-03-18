@@ -1,6 +1,7 @@
 import math
 from iteration_utilities import deepflatten
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Callable
+from random import uniform
 
 
 class Tensor:
@@ -174,17 +175,25 @@ class Tensor:
     def _shape_tensor(self):
         def build_tensor(data, shape):
             entries = 0.0
-            if self.init:
-                if self.init == 'zeros':
-                    entries = 0.0
-                elif self.init == 'ones':
-                    entries = 1.0
+            if self.init and self.init == 'ones':
+                entries = 1.0
             return [build_tensor(data, shape[1:]) for _ in range(shape[0])] if shape else entries
 
         self.tensor = build_tensor(self.data, self.shape)
         if self.data:
             for i in range(self.num_entries):
                 self._set_entry(self._entry_loc(i), self.data[i])
+
+        if self.init and self.init == 'xavier':
+            input_neurons = self.shape[0]
+            lower, upper = -(1.0 / math.sqrt(input_neurons)), (1.0 / math.sqrt(input_neurons))
+            data = [uniform(lower, upper) for _ in range(self.num_entries)]
+            for i in range(self.num_entries):
+                self._set_entry(self._entry_loc(i), data[i])
+        if self.init and isinstance(self.init, Callable):
+            data = [self.init() for _ in range(self.num_entries)]
+            for i in range(self.num_entries):
+                self._set_entry(self._entry_loc(i), data[i])
         return self.tensor
 
     @property
@@ -291,7 +300,7 @@ class Tensor:
         }
         if not self.order == 2:
             raise NotImplementedError(
-                f'''have only created aggregation for tensors of order 2: self.shape {tensor2.shape}''')
+                f'''have only created aggregation for tensors of order 2: self.shape {self.shape}''')
 
         if axis is None:
             accum = list()

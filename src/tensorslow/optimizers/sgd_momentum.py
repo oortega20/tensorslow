@@ -10,11 +10,11 @@ class SGDMomentum(Optimizer):
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.velocities = dict()
-        for layer in model.layers():
+        for layer in model.layers:
             if isinstance(layer, Layer):
                 self.velocities[layer.name] = dict()
-                for grad_name, grad in layer.grads.items():
-                    self.velocities[layer.name][grad_name] = Tensor([], grad.shape, init='zeros')
+                for w_name, w in layer.weights.items():
+                    self.velocities[layer.name][w_name] = Tensor([], w.shape, init='zeros')
 
     def update_rule(self, layer):
         weights, grads, name = layer.weights, layer.grads, layer.name

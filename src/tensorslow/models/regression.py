@@ -6,9 +6,9 @@ from tensorslow.models import Model
 
 
 in_dim = 1
-x_1 = Dense(in_dim=in_dim, out_dim=5)
+x_1 = Dense('x_1', in_dim=in_dim, out_dim=5)
 a_1 = Relu()
-x_2 = Dense(in_dim=5, out_dim=1)
+x_2 = Dense('x_2', in_dim=5, out_dim=1)
 l1 = L1Loss()
 l2 = L2Loss()
 
