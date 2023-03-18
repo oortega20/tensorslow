@@ -10,7 +10,7 @@ from tensorslow.models import Model
 
 
 img_size = 28 * 28
-x_1 = Dense('x_1', in_dim=img_size, out_dim=img_size)
+x_1 = Dense('x_1', in_dim=img_size, out_dim=784)
 a_1 = Relu()
 x_2 = Dense('x_2', in_dim=img_size, out_dim=100)
 a_2 = Relu()
