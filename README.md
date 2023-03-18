@@ -49,18 +49,17 @@ A simple demonstration of forward propagation with Tensorslow's available layers
 >>> x
 Tensor([[0.000 1.000 2.000]
         [3.000 4.000 5.000]])
->>> act = Relu()
->>> f = Dense(in_shape=(2,3), out_dims=3)
->>> f.w
-Tensor([[1.000 1.000 1.000]
-        [1.000 1.000 1.000]
-        [1.000 1.000 1.000]])
->>> f.b
-Tensor([[1.000 1.000 1.000]
-        [1.000 1.000 1.000]])
+>>> act = Sigmoid()
+>>> f = Dense('f', in_dim=3, out_dim=3)
+>>> f.weights['w']
+Tensor([[0.057 0.051 0.021]
+        [0.047 -0.031 0.003]
+        [0.015 -0.052 0.058]])
+>>> f.weights['b']
+Tensor([0.333 0.333 0.333])
 >>> out = act(f(x))
 >>> out
-Tensor([[4.000 4.000 4.000]
-        [13.000 13.000 13.000]])
+Tensor([[0.601 0.549 0.611]
+        [0.682 0.525 0.667]])
 >>>
 ```
