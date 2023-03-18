@@ -1,3 +1,5 @@
+import dill
+import pickle
 from abc import ABC
 from typing import Tuple, Optional
 
@@ -17,7 +19,7 @@ class Model(ABC):
         for layer in self.layers[:-1]:
             x = layer(x)
 
-        if self.y:
+        if y:
             batch_loss, grad = self.layers[-1](x, y)
         else:
             return x
@@ -30,3 +32,9 @@ class Model(ABC):
         for layer in self.layers[:-1][::-1]:
             grad = layer.backward(grad)
         return grad
+
+    def save(self, path: str='model.pkl'):
+        with open(path, 'wb') as f:
+            dill.dump(self, f)
+
+
