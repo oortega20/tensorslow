@@ -296,7 +296,8 @@ class Tensor:
             'sum': sum,
             'max': max,
             'min': min,
-            'mean': lambda x: sum(x) / len(x)
+            'mean': lambda x: sum(x) / len(x),
+            'argmax': lambda lst: lst.index(max(lst))
         }
         if not self.order == 2:
             raise NotImplementedError(
@@ -329,6 +330,9 @@ class Tensor:
 
     def mean(self, axis=None):
         return self._agg('mean', axis=axis)
+
+    def argmax(self, axis=None):
+        return self._agg('argmax', axis=axis)
 
     def expand_dims(self, axis=0):
         elems = list(deepflatten(self.tensor))
