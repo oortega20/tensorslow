@@ -6,3 +6,4 @@ from tensorslow import linalg
 from tensorslow import losses
 from tensorslow import optimizers
 from tensorslow import datasets
+from tensorslow import metrics
