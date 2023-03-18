@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Tuple
+from typing import Tuple, Optional
 
 from tensorslow.linalg import Tensor
 
@@ -13,14 +13,18 @@ class Model(ABC):
         for layer in layers:
             self.layers.append(layer)
 
-    def forward(self, x: Tensor, y: Tensor) -> Tuple[loss, Tensor]:
+    def forward(self, x: Tensor, y: Optional[Tensor]=None):
         for layer in self.layers[:-1]:
             x = layer(x)
-        batch_loss, grad = self.layers[-1](x, y)
+
+        if self.y:
+            batch_loss, grad = self.layers[-1](x, y)
+        else:
+            return x
         return batch_loss, grad
 
-    def __call__(self, x: Tensor, y: Tensor) -> Tuple[loss, Tensor]:
-        return self.forward(x, y)
+    def __call__(self, x: Tensor, y: Optional[Tensor]) -> Tuple[loss, Tensor]:
+        return self.forward(x, y=y)
 
     def backward(self, grad: Tensor) -> Tensor:
         for layer in self.layers[:-1][::-1]:
