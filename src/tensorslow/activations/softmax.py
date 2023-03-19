@@ -28,7 +28,7 @@ class Softmax(Activation):
         for n in range(num_samples):
             sm = Tensor.diagflat(self.x.tensor[n])
             grad += (sm - self.x @ self.x.T)
-        return dout @ grad
+        return grad.T @ dout
 
     def forward(self, x: Tensor) -> Tensor:
         self.x = self.function(x)

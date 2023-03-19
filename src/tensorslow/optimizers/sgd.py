@@ -3,7 +3,7 @@ from tensorslow.models import Model
 
 
 class SGD(Optimizer):
-    def __init__(self, model: Model, learning_rate=1e-3):
+    def __init__(self, model: Model, learning_rate=1e-4):
         super().__init__(model)
         self.learning_rate = learning_rate
 

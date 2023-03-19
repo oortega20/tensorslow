@@ -20,9 +20,11 @@ class CrossEntropyLoss(Loss):
         loss, arg_max = 0.0, Tensor([], y_hat.shape, init='zeros')
         for n in range(num_samples):
             y_class = y.tensor[n]
-            loss += -1 * self.log(y_hat.tensor[n][y_class])
+            if y_hat.tensor[n][y_class] <= 0:
+                raise ValueError(f'{y_hat.tensor[n][y_class]}: negative prob value')
+            loss -= self.log(y_hat.tensor[n][y_class])
             arg_max.tensor[n][y_class] = 1
 
         self.loss = loss
-        self.grad = y_hat - arg_max
+        self.grad = (y_hat - arg_max)
         return self.loss, self.grad
