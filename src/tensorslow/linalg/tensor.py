@@ -1,17 +1,21 @@
 import math
-from iteration_utilities import deepflatten
 from typing import Union, List, Tuple, Callable
 from random import uniform
+
+from iteration_utilities import deepflatten
 
 
 class Tensor:
     precision = 3
 
-    def __init__(self, data: List[Union[int, float]], shape: Tuple[int], init: str = ''):
+    def __init__(self, data: List[Union[int, float]], shape: Tuple[int], init: str = '', data_tensor: bool=False):
         self.shape = shape
-        self.data = data
         self.init = init
-        self.tensor = self._shape_tensor() if shape else []
+        if data_tensor and isinstance(data, list):
+            self.tensor = data
+            self.data = None
+        else:
+            self.tensor = self._shape_tensor(data) if shape else []
 
     @staticmethod
     def op_error_msg(op, t1, t2):
@@ -172,17 +176,17 @@ class Tensor:
 
         return get_helper(self.tensor, entry_loc)
 
-    def _shape_tensor(self):
+    def _shape_tensor(self, data):
         def build_tensor(data, shape):
             entries = 0.0
             if self.init and self.init == 'ones':
                 entries = 1.0
             return [build_tensor(data, shape[1:]) for _ in range(shape[0])] if shape else entries
 
-        self.tensor = build_tensor(self.data, self.shape)
-        if self.data:
+        self.tensor = build_tensor(data, self.shape)
+        if data:
             for i in range(self.num_entries):
-                self._set_entry(self._entry_loc(i), self.data[i])
+                self._set_entry(self._entry_loc(i), data[i])
 
         if self.init and self.init == 'xavier':
             input_neurons = self.shape[0]
@@ -190,6 +194,7 @@ class Tensor:
             data = [uniform(lower, upper) for _ in range(self.num_entries)]
             for i in range(self.num_entries):
                 self._set_entry(self._entry_loc(i), data[i])
+
         if self.init and isinstance(self.init, Callable):
             data = [self.init() for _ in range(self.num_entries)]
             for i in range(self.num_entries):

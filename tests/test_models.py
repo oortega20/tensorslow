@@ -19,7 +19,7 @@ opt_m = SGD(mnist)
 opt_l1 = SGD(l1)
 opt_l2 = SGD(l2)
 num_iters = 100
-print('currently training an l1regressor, l2regressor, and an mnist model with a dummy sample data')
+print('currently training an l1regressor, l2regressor, and an mnist_data model with a dummy sample data')
 for _ in range(num_iters):
     print(_, 'current iter')
     l1loss, l1grad = l1(x_regress, y_regress)
