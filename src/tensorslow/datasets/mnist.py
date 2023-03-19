@@ -16,11 +16,12 @@ class MNIST(Dataset):
     train_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/train/**/*.png')
     test_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/test/**/*.png')
 
-    def __init__(self, batch_size=32, load_train=True, load_test=False, shuffle=True):
+    def __init__(self, batch_size=32, load_train=True, load_test=False, shuffle=True, normalize=True):
         self.batch_size = batch_size
         self.load_train = load_train
         self.load_test = load_test
         self.shuffle = shuffle
+        self.normalize = normalize
         data = self.download()
         self._x_train = data['x_train']
         self._y_train = data['y_train']
@@ -54,6 +55,8 @@ class MNIST(Dataset):
             label = int(re.split(r"\\|/", img_path)[-2])
             if i % self.batch_size == 0 and x_data:
                 np_data = np.vstack(x_data)
+                if self.normalize:
+                    np_data = np_data / 255
                 x = Tensor(np_data.tolist(), np_data.shape, data_tensor=True)
                 y = Tensor(y_data, (len(y_data),))
                 tensors.append((x, y))

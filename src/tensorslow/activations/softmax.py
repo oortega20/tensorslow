@@ -20,19 +20,20 @@ class Softmax(Activation):
         return e_x / div
 
     def derivative(self, dout: Tensor) -> Tensor:
-        if not dout.order == 2:
+        if dout and not dout.order == 2:
             raise ValueError('Softmax derivative only for tensors of order 2')
 
-        num_samples, _ = self.x.shape
+        num_samples, num_classes = self.x.shape
         grad = Tensor([], (num_samples, num_samples), init='zeros')
         for n in range(num_samples):
             sm = Tensor.diagflat(self.x.tensor[n])
-            grad += (sm - self.x @ self.x.T)
-        return grad.T @ dout
+            outer_prod = Tensor(self.x.tensor[n], (num_classes, 1))
+            grad = grad + (sm - (outer_prod @ outer_prod.T))
+        return grad if not dout else dout.T @ grad
 
     def forward(self, x: Tensor) -> Tensor:
         self.x = self.function(x)
         return self.x
 
-    def backward(self, dout: Tensor) -> Tensor:
+    def backward(self, dout: Tensor=None) -> Tensor:
         return self.derivative(dout)

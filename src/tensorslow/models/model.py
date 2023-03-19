@@ -3,6 +3,7 @@ from abc import ABC
 from typing import Tuple, Optional
 
 from tensorslow.linalg import Tensor
+from tensorslow.layers import Layer
 
 
 loss = float
@@ -13,6 +14,7 @@ class Model(ABC):
         self.layers = []
         for layer in layers:
             self.layers.append(layer)
+        self.num_params = None
 
     def forward(self, x: Tensor, y: Optional[Tensor]=None):
         for layer in self.layers[:-1]:
@@ -36,4 +38,12 @@ class Model(ABC):
         with open(path, 'wb') as f:
             dill.dump(self, f)
 
-
+    def get_num_params(self):
+        if not self.num_params:
+            num_params = 0
+            for layer in self.layers:
+                if isinstance(layer, Layer):
+                    for weight in layer.weights.values():
+                        num_params += weight.num_entries
+            self.num_params = num_params
+        return self.num_params

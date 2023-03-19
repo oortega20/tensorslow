@@ -8,10 +8,11 @@ loss = float
 
 
 class CrossEntropyLoss(Loss):
-    def __init__(self, units='nats'):
+    def __init__(self, units='nats', eps=1e-7):
         self.loss = 0
         self.grad = Tensor([], (1,))
         self.log = log if units == 'nats' else log2
+        self.eps = eps
 
     def compute_loss(self, y_hat: Tensor, y: Tensor) -> Tuple[loss, Tensor]:
         if y_hat.order != 2 or y.order != 1 or y_hat.shape[0] != y.shape[0]:
@@ -21,10 +22,10 @@ class CrossEntropyLoss(Loss):
         for n in range(num_samples):
             y_class = y.tensor[n]
             if y_hat.tensor[n][y_class] <= 0:
-                raise ValueError(f'{y_hat.tensor[n][y_class]}: negative prob value')
+                y_hat.tensor[n][y_class] += self.eps
             loss -= self.log(y_hat.tensor[n][y_class])
             arg_max.tensor[n][y_class] = 1
 
         self.loss = loss
-        self.grad = (y_hat - arg_max)
+        self.grad = (y_hat - arg_max).T
         return self.loss, self.grad
