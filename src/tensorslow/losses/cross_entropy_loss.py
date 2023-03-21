@@ -27,5 +27,5 @@ class CrossEntropyLoss(Loss):
             arg_max.tensor[n][y_class] = 1
 
         self.loss = loss
-        self.grad = (y_hat - arg_max).T
+        self.grad = (y_hat - arg_max)
         return self.loss, self.grad

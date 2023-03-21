@@ -29,7 +29,7 @@ class Softmax(Activation):
             sm = Tensor.diagflat(self.x.tensor[n])
             outer_prod = Tensor(self.x.tensor[n], (num_classes, 1))
             grad = grad + (sm - (outer_prod @ outer_prod.T))
-        return grad if not dout else dout.T @ grad
+        return grad if not dout else grad @ dout
 
     def forward(self, x: Tensor) -> Tensor:
         self.x = self.function(x)

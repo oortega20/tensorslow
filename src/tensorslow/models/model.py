@@ -1,9 +1,11 @@
 import dill
 from abc import ABC
 from typing import Tuple, Optional
+from tabulate import tabulate, SEPARATING_LINE
 
 from tensorslow.linalg import Tensor
 from tensorslow.layers import Layer
+from tensorslow.activations import Activation
 
 
 loss = float
@@ -47,3 +49,20 @@ class Model(ABC):
                         num_params += weight.num_entries
             self.num_params = num_params
         return self.num_params
+
+    def summary(self):
+        layer_name, layer_weights, layer_shapes, layer_params = None, None, None, None
+        summaries = [['MODEL', '', '', self.get_num_params()]]
+        for layer in self.layers[:-1]:
+            if isinstance(layer, Layer):
+                layer_name = layer.name
+                layer_weights = tuple(layer.weights.keys())
+                layer_shapes = tuple([l.shape for l in layer.weights.values()])
+                layer_params = sum([l.num_entries for l in layer.weights.values()])
+            elif isinstance(layer, Activation):
+                layer_name = layer.__class__.__name__
+                layer_weights = (None,)
+                layer_shapes = (None,)
+                layer_params = 0
+            summaries.append([layer_name, layer_weights, layer_shapes, layer_params])
+        print(tabulate(summaries, headers=['name', 'weight names', 'weight shapes', '#parameters'], tablefmt='github'))
