@@ -27,7 +27,7 @@ class Softmax(Activation):
         grad = Tensor([], (num_samples, num_samples), init='zeros')
         cache = None
         for n in range(num_samples):
-            sm = Tensor.diagflat(self.x.tensor[n], cache=cache)
+            sm = Tensor.diagflat(self.x.tensor[n], cache=cache.tensor)
             cache = sm
             outer_prod = Tensor(self.x.tensor[n], (num_classes, 1))
             grad = grad + (sm - (outer_prod @ outer_prod.T))
