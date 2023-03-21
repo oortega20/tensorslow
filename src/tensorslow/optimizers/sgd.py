@@ -11,6 +11,6 @@ class SGD(Optimizer):
         weights, grads = layer.weights, layer.grads
         for grad_name, grad in grads.items():
             weight = weights[grad_name]
-            new_weight = weight - self.learning_rate * grad
+            new_weight = weight - (self.learning_rate * grad)
             weights[grad_name] = new_weight
 
