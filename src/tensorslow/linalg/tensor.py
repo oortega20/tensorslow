@@ -358,9 +358,9 @@ class Tensor:
         return self.unary_op(lambda x: math.sqrt(x))
 
     @classmethod
-    def diagflat(cls, data: list):
+    def diagflat(cls, data: list, cache=None):
         t_shape = (len(data),) * 2
-        new_data = [[0 for _ in range(len(data))] for _ in range(len(data))]
+        new_data = [[0 for _ in range(len(data))] for _ in range(len(data))] if not cache else cache
         for i in range(len(new_data)):
             new_data[i][i] = data[i]
         return Tensor(list(deepflatten(new_data)), t_shape)
