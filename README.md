@@ -63,3 +63,27 @@ Tensor([[0.601 0.549 0.611]
         [0.682 0.525 0.667]])
 >>>
 ```
+# Tensorslow MNIST Classifier
+
+## Training
+![Tensorslow MS Training](imgs/ts_loss.png)
+## Results
+train results
+
+| DIGIT   |   ACC RATE (%) |
+|---------|----------------|
+| 0       |          0.974 |
+| 1       |          0.978 |
+| 2       |          0.961 |
+| 3       |          0.942 |
+| 4       |          0.943 |
+| 5       |          0.96  |
+| 6       |          0.973 |
+| 7       |          0.964 |
+| 8       |          0.937 |
+| 9       |          0.957 |
+| TOTAL   |          0.957 |
+test results
+![Test Conf Matrix](imgs/test_conf_matrix.png)
+![Train Conf Matrix](imgs/train_conf_matrix.png)
+## Future Work
