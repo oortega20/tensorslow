@@ -70,6 +70,7 @@ Tensor([[0.601 0.549 0.611]
 ## Results
 train results
 
+
 | DIGIT   |   ACC RATE (%) |
 |---------|----------------|
 | 0       |          0.974 |
@@ -83,7 +84,23 @@ train results
 | 8       |          0.937 |
 | 9       |          0.957 |
 | TOTAL   |          0.957 |
-test results
-![Test Conf Matrix](imgs/test_conf_matrix.png)
 ![Train Conf Matrix](imgs/train_conf_matrix.png)
+
+test results
+
+| DIGIT   |   ACC RATE (%) |
+|---------|----------------|
+| 0       |          0.974 |
+| 1       |          0.981 |
+| 2       |          0.954 |
+| 3       |          0.942 |
+| 4       |          0.939 |
+| 5       |          0.954 |
+| 6       |          0.958 |
+| 7       |          0.949 |
+| 8       |          0.923 |
+| 9       |          0.948 |
+| TOTAL   |          0.95  |
+![Test Conf Matrix](imgs/test_conf_matrix.png)
+
 ## Future Work
