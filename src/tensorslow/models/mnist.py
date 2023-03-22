@@ -10,9 +10,9 @@ from tensorslow.models import Model
 
 
 img_size = 28 * 28
-x_1 = Dense('x_1', in_dim=img_size, out_dim=128)
+x_1 = Dense('x_1', in_dim=img_size, out_dim=100)
 a_1 = Relu()
-x_2 = Dense('x_2', in_dim=128, out_dim=10)
+x_2 = Dense('x_2', in_dim=100, out_dim=10)
 s = Softmax()
 ce = CrossEntropyLoss(units='bits')
 

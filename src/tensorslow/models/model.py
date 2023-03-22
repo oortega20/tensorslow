@@ -28,7 +28,7 @@ class Model(ABC):
             return x
         return batch_loss, grad
 
-    def __call__(self, x: Tensor, y: Optional[Tensor]) -> Tuple[loss, Tensor]:
+    def __call__(self, x: Tensor, y: Optional[Tensor]=None) -> Tuple[loss, Tensor]:
         return self.forward(x, y=y)
 
     def backward(self, grad: Tensor) -> Tensor:

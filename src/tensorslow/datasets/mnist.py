@@ -14,9 +14,10 @@ from tensorslow.datasets import Dataset
 
 class MNIST(Dataset):
     train_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/train/**/*.png')
-    test_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/test/**/*.png')
+    test_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/valid/**/*.png')
 
-    def __init__(self, batch_size=32, load_train=True, load_test=False, shuffle=True, normalize=True):
+    def __init__(self, batch_size=32, load_train=True, load_test=False, shuffle=True, normalize=True, seed=520):
+        random.seed(seed)        
         self.batch_size = batch_size
         self.load_train = load_train
         self.load_test = load_test
@@ -54,15 +55,16 @@ class MNIST(Dataset):
         for i, img_path in tqdm(enumerate(paths), total=len(paths), desc=desc):
             label = int(re.split(r"\\|/", img_path)[-2])
             if i % self.batch_size == 0 and x_data:
-                np_data = np.vstack(x_data)
-                if self.normalize:
-                    np_data = np_data / 255
+                np_data = np.vstack(x_data) 
                 x = Tensor(np_data.tolist(), np_data.shape, data_tensor=True)
                 y = Tensor(y_data, (len(y_data),))
                 tensors.append((x, y))
                 x_data, y_data = [], []
             img = Image.open(img_path)
-            x_data.append(np.asarray(img).reshape(-1))
+            x_np = np.array(img, dtype=float).reshape(-1)
+            if self.normalize:
+                x_np /= 255.0
+            x_data.append(x_np)
             y_data.append(label)
         if self.shuffle:
             random.shuffle(tensors)
