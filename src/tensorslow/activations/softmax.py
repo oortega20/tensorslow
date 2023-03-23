@@ -8,8 +8,10 @@ from tensorslow.activations import Activation
 class Softmax(Activation):
     """
     Activation function softmax:
-    For an input_vector x with c classes, the soft
-    softmax(x)_i= 1 / e^z_i / sum(j=1..k  e^z_j)
+    For an input_vector x with c classes
+    the probability given by the softmax function is as follows.
+    softmax(x)_i= 1 / e^x_i / sum(j=1..k  e^x_j)
+    Where x_i is the ith entry in x
     """
     def __init__(self):
         self.x = None
