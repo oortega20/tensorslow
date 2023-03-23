@@ -6,6 +6,7 @@ from iteration_utilities import deepflatten
 
 
 class Tensor:
+    """Implementation of Tensor Object using python3 lists"""
     precision = 3
 
     def __init__(self, data: List[Union[int, float]], shape: Tuple[int], init: str = '', data_tensor: bool=False):
@@ -22,6 +23,11 @@ class Tensor:
         return f'unsupported operation: {op}({t1}, {t2})'
 
     def __add__(self, t):
+        """
+        perform binary add
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('+', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -30,9 +36,19 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('+', self, t))
 
     def __radd__(self, t):
+        """
+        perform binary add
+        :param t: number or Tensor
+        :return: Tensor
+        """
         return self.__add__(t)
 
     def __sub__(self, t):
+        """
+        perform binary sub
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('-', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -41,6 +57,11 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('-', self, t))
 
     def __rsub__(self, t):
+        """
+        perform binary sub
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('-', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -49,6 +70,11 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('-', self, t))
 
     def __mul__(self, t):
+        """
+        perform binary mul
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('*', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -57,9 +83,19 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('*', self, t))
 
     def __rmul__(self, t):
+        """
+        perform binary mul
+        :param t: number or Tensor
+        :return: Tensor
+        """
         return self.__mul__(t)
 
     def __truediv__(self, t):
+        """
+        perform binary div
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('/', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -68,6 +104,11 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('/', self, t))
 
     def __rtruediv__(self, t):
+        """
+        perform binary div
+        :param t: number or Tensor
+        :return: Tensor
+        """
         if isinstance(t, Tensor):
             return self.binary_op('/', t)
         elif isinstance(t, float) or isinstance(t, int):
@@ -76,6 +117,11 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('/', self, t))
 
     def __matmul__(self, t):
+        """
+        perform matrix multiplication
+        :param t: Tensor
+        :return: Tensor
+        """
         return self.matmul(t)
 
     def __pow__(self, t):
@@ -94,6 +140,14 @@ class Tensor:
             raise TypeError(Tensor.op_error_msg('**', self, t))
 
     def _print_helper(self, t, shape, levels, indent):
+        """
+        Helper for printing str or repr
+        :param t: Tensor's tensor attribute
+        :param shape: Tensor's shape atti
+        :param levels: level of nesting for printing
+        :param indent: initial indent for printing
+        :return: string
+        """
         precision = self.precision
         if len(shape) == 1:
             return '[' + ' '.join([f'{e:.{precision}f}' for e in t]) + ']'
@@ -110,20 +164,30 @@ class Tensor:
             return prefix + rep_str + suffix
 
     def __repr__(self):
+        """return debug representation of tensor"""
         return 'Tensor(' + self._print_helper(self.tensor, self.shape, 0, len('Tensor(')) + ')'
 
     def __str__(self):
+        """return string representation of tensor"""
         return self._print_helper(self.tensor, self.shape, 0, 0)
 
     @property
     def order(self):
+        """return dimensionality of dimensions to describe shape"""
         return len(self.shape)
 
     @property
     def num_entries(self):
+        """return number of entries in array"""
         return math.prod(self.shape)
 
     def _entry_loc(self, entry_num, is_batch=False):
+        """
+        Determine indices of entry into enumerated position in array.
+        :param entry_num: enumerated position in array
+        :param is_batch: determine whether to end two dimensions early (for matmul of order > 2)
+        :return: list of tensor indices
+        """
         entry_loc = []
         dims = self.shape[:-2][::-1] if is_batch else self.shape[::-1]
         for elem in dims:
@@ -132,6 +196,11 @@ class Tensor:
         return entry_loc
 
     def _shape_compatible(self, tensor, op: str) -> bool:
+        """
+        Determine whether self and tensor shapes are compatible
+        :param tensor: right hand operator in broadcasting operation
+        :return: boolean indicating whether shapes are compatible
+        """
         if op == 'binary':
             return self.shape == tensor.shape
         elif op == 'matmul':
@@ -144,6 +213,11 @@ class Tensor:
         return False
 
     def _shape_broadcastable(self, tensor):
+        """
+        Determine whether self and tensor are broadcastable
+        :param tensor: right hand operator in broadcasting operation
+        :return: boolean indicating whether one can broadast self and tensor
+        """
         shape = self.shape
         broadcast_shape = tensor.shape
         if self.order < tensor.order:
@@ -159,6 +233,12 @@ class Tensor:
         return True
 
     def _set_entry(self, entry_loc, entry):
+        """
+        Set entry specified by the entry location provided to entry-value
+        :param entry_loc: list of indices
+        :param entry: value to input into tensor
+        :return:
+        """
         def set_helper(tensor, loc, e):
             if len(loc) == 1:
                 tensor[loc[0]] = e
@@ -168,6 +248,11 @@ class Tensor:
         set_helper(self.tensor, entry_loc, entry)
 
     def _get_entry(self, entry_loc):
+        """
+        Grab entry specified by the entry location provided
+        :param entry_loc: list of indices to recurse into
+        :return: entry specifiec
+        """
         def get_helper(tensor, loc):
             if len(loc) == 1:
                 return tensor[loc[0]]
@@ -177,6 +262,11 @@ class Tensor:
         return get_helper(self.tensor, entry_loc)
 
     def _shape_tensor(self, data):
+        """
+        Helper to create tensor object
+        :param data: list of data for values of tensor
+        :return: tensor attribute of Tensor object.
+        """
         def build_tensor(data, shape):
             entries = 0.0
             if self.init and self.init == 'ones':
@@ -203,6 +293,10 @@ class Tensor:
 
     @property
     def T(self):
+        """
+        Compute the transpose of a matrix
+        :return: transposed matrix
+        """
         transposed_shape = self.shape[:-2] + self.shape[-2:][::-1]
         tensor = Tensor([], transposed_shape)
         if self.order == 2:
@@ -221,6 +315,11 @@ class Tensor:
         return tensor
 
     def unary_op(self, op):
+        """
+        Perform an element-wise operation on a tensor
+        :param op: operation to perform
+        :return: op(x)
+        """
         tensor = Tensor([], self.shape)
         for i in range(self.num_entries):
             loc = self._entry_loc(i)
@@ -229,6 +328,12 @@ class Tensor:
         return tensor
 
     def binary_op(self, op, tensor):
+        """
+        Perform a binary operation on two tensors
+        :param op: operation to perform on tensors
+        :param tensor: right-hand operand
+        :return: op(self, tensor)
+        """
         ops = {
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
@@ -266,6 +371,11 @@ class Tensor:
             return result
 
     def matmul(self, tensor2):
+        """
+        Perform matrix-multiplication on two-tensors
+        :param tensor2: Right hand multiplier
+        :return: Results of  self @ tensor2
+        """
         def _dot_product(tensor1, tensor2):
             return sum(x * y for x, y in zip(tensor1, tensor2))
 
@@ -297,6 +407,12 @@ class Tensor:
             raise ValueError(f'''incompatible shapes for matmul: t1.shape {self.shape}, t2.shape {tensor2.shape}''')
 
     def _agg(self, method: str, axis=None):
+        """
+        Perform aggregation operation on a tensor
+        :param method: operation to perform on tensor
+        :param axis: dimension to apply reduction
+        :return: result or tensor of result of operations
+        """
         agg_ops = {
             'sum': sum,
             'max': max,
@@ -325,21 +441,56 @@ class Tensor:
             return result
 
     def sum(self, axis=None):
+        """
+        Computes sum of elements in Tensor.
+        If axis is set, will perform reduction across selected axis.
+        :param axis: dimension to apply reduction.
+        :return: either sum or tensor of sums
+        """
         return self._agg('sum', axis=axis)
 
     def max(self, axis=None):
+        """
+        Computes max of elements in Tensor.
+        If axis is set, will perform reduction across selected axis.
+        :param axis: dimension to apply reduction.
+        :return: either max or tensor of maxes
+        """
         return self._agg('max', axis=axis)
 
     def min(self, axis=None):
+        """
+        Computes min of elements in Tensor.
+        If axis is set, will perform reduction across selected axis.
+        :param axis: dimension to apply reduction.
+        :return: either min or tensor of mins
+        """
         return self._agg('min', axis=axis)
 
     def mean(self, axis=None):
+        """
+        Computes mean of elements in Tensor.
+        If axis is set, will perform reduction across selected axis.
+        :param axis: dimension to apply reduction.
+        :return: either mean or tensor of means
+        """
         return self._agg('mean', axis=axis)
 
     def argmax(self, axis=None):
+        """
+        Computes argmax of elements in Tensor.
+        If axis is set, will perform reduction across selected axis.
+        :param axis: dimension to apply reduction.
+        :return: either index of tensor of indices
+        """
         return self._agg('argmax', axis=axis)
 
     def expand_dims(self, axis=0):
+        """
+        Insert a new axis that will appear in the array
+        :param axis: position in shape tensor new-axis will be appended
+        :return:
+        """
         elems = list(deepflatten(self.tensor))
         if axis == 0:
             new_shape = (1,) + self.shape
@@ -352,13 +503,21 @@ class Tensor:
         return Tensor(elems, new_shape)
 
     def abs(self):
+        """Perform element-wize absolute-value on Tensor"""
         return self.unary_op(lambda x: abs(x))
 
     def sqrt(self):
+        """Perform element-wize square root on Tensor"""
         return self.unary_op(lambda x: math.sqrt(x))
 
     @classmethod
     def diagflat(cls, data: list, cache=None):
+        """
+        Create tensor x of dim: len(data) x len(data) where x_i,i = data_i
+        :param data: list of input data for tensor
+        :param cache: cache of zero-tensor (if repeated comp is needed)
+        :return: Tensor
+        """
         t_shape = (len(data),) * 2
         new_data = [[0 for _ in range(len(data))] for _ in range(len(data))] if not cache else cache
         for i in range(len(new_data)):

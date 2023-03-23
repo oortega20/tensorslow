@@ -6,10 +6,20 @@ from tensorslow.activations import Activation
 
 
 class Softmax(Activation):
+    """
+    Activation function softmax:
+    For an input_vector x with c classes, the soft
+    softmax(x)_i= 1 / e^z_i / sum(j=1..k  e^z_j)
+    """
     def __init__(self):
         self.x = None
 
     def function(self, x: Tensor) -> Tensor:
+        """
+        Perform forward pass on a Tensor x
+        :param x: input logits
+        :return: return softmax class probabilities
+        """
         if not x.order == 2:
             raise ValueError('Softmax activation only for tensors of order 2')
         s = x.max(axis=1)
@@ -20,6 +30,11 @@ class Softmax(Activation):
         return e_x / div
 
     def derivative(self, dout: Tensor) -> Tensor:
+        """
+        Perform back-propagation on a tensor dout.
+        :param dout: the incoming gradient needed to perform back-propagation.
+        :return: gradient of activation function with respect to the activation.
+        """
         if dout and not dout.order == 2:
             raise ValueError('Softmax derivative only for tensors of order 2')
 
@@ -34,8 +49,18 @@ class Softmax(Activation):
         return grad if not dout else dout @ grad
 
     def forward(self, x: Tensor) -> Tensor:
+        """
+        Perform forward propagation on a tensor.
+        :param x: Input Tensor
+        :return: Output Tensor
+        """
         self.x = self.function(x)
         return self.x
 
     def backward(self, dout: Tensor=None) -> Tensor:
+        """
+        Perform back-propagation on a tensor dout.
+        :param dout: the incoming gradient needed to perform back-propagation.
+        :return: gradient of activation function with respect to the activation.
+        """
         return self.derivative(dout)

@@ -1,7 +1,7 @@
 import dill
 from abc import ABC
 from typing import Tuple, Optional
-from tabulate import tabulate, SEPARATING_LINE
+from tabulate import tabulate
 
 from tensorslow.linalg import Tensor
 from tensorslow.layers import Layer
@@ -12,6 +12,7 @@ loss = float
 
 
 class Model(ABC):
+    """Abstract Class for Tensorslow Neural Network Models"""
     def __init__(self, *layers):
         self.layers = []
         for layer in layers:
@@ -19,6 +20,12 @@ class Model(ABC):
         self.num_params = None
 
     def forward(self, x: Tensor, y: Optional[Tensor]=None):
+        """
+        Perform forward propagation on neural-network model
+        :param x: data to be fed into model
+        :param y: labels to be fed into model
+        :return: either loss and grad or output predictions
+        """
         for layer in self.layers[:-1]:
             x = layer(x)
 
@@ -32,15 +39,27 @@ class Model(ABC):
         return self.forward(x, y=y)
 
     def backward(self, grad: Tensor) -> Tensor:
+        """
+        Perform back-propagation on neural-network model
+        :param grad: gradient of loss function
+        :return: gradient of loss with respect to input-x
+        """
         for layer in self.layers[:-1][::-1]:
             grad = layer.backward(grad)
         return grad
 
     def save(self, path: str='model.pkl'):
+        """
+        Save model into a pickle file
+        :param path: path to save pickle file.
+        """
         with open(path, 'wb') as f:
             dill.dump(self, f)
 
     def get_num_params(self):
+        """
+        :return: Return number of parameters in model
+        """
         if not self.num_params:
             num_params = 0
             for layer in self.layers:
@@ -51,6 +70,10 @@ class Model(ABC):
         return self.num_params
 
     def summary(self):
+        """
+        Output a summary of model architecture.
+        :return: None
+        """
         layer_name, layer_weights, layer_shapes, layer_params = None, None, None, None
         summaries = [['MODEL', '', '', self.get_num_params()]]
         for layer in self.layers[:-1]:

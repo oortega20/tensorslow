@@ -18,6 +18,12 @@ ce = CrossEntropyLoss(units='bits')
 
 
 def ts_mnist_classifier(from_ts=False):
+    """
+    Retrieve tensorslow mnist classifier
+    :param from_ts: use model weights as described in repo here:
+                    https://github.com/oortega20/tensorslow-experimentation
+    :return: ts_mnist_classifier
+    """
     if from_ts:
         model_path = f'{ts.__path__[0]}/saved_models/ts_mnist_classifier.pkl'
         with open(pathlib.Path(model_path), 'rb') as f:

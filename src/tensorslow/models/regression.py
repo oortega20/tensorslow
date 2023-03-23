@@ -14,8 +14,14 @@ l2 = L2Loss()
 
 
 def ts_l1_regressor():
+    """
+    :return: return model with l1-loss function
+    """
     return Model(x_1, a_1, x_2, l1)
 
 
 def ts_l2_regressor():
+    """
+    :return: return model with l2-loss function
+    """
     return Model(x_1, a_1, x_2, l2)

@@ -1,6 +1,7 @@
 import random
 import glob
 import re
+from typing import Tuple
 
 from pathlib import Path
 from PIL import Image
@@ -13,6 +14,10 @@ from tensorslow.datasets import Dataset
 
 
 class MNIST(Dataset):
+    """
+    Copy of The MNIST database (Modified National Institute of Standards and Technology database)
+    that contains handwritten digits for classification tasks.
+    """
     train_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/train/**/*.png')
     test_path = Path(f'{ts.__path__[0]}/datasets/mnist_data/valid/**/*.png')
 
@@ -30,6 +35,7 @@ class MNIST(Dataset):
         self._y_test = data['y_test']
 
     def download(self):
+        """Download MNIST dataset"""
         data = dict(x_train=None, y_train=None, x_test=None, y_test=None)
         if self.load_train:
             train_load = 'Loading MNIST Training Data'
@@ -45,7 +51,13 @@ class MNIST(Dataset):
 
         return data
 
-    def _download_dataset(self, path, desc=''):
+    def _download_dataset(self, path: str, desc: str='') -> Tuple[Tensor, Tensor]:
+        """
+        Helper functionality for downloading dataset
+        :param path: path in tensorslow module to download from
+        :param desc: description for tqdm progress bar
+        :return: set of x_data and y_data (tuple)
+        """
         tensors = []
         x_data, y_data = [], []
         paths = list(glob.glob(str(path), recursive=True))
