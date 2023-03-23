@@ -101,6 +101,6 @@ for epoch in range(epochs):
         model.backward(grad)
         opt.update()
 ```
-Details of the Tensorslow MNIST Classifier can be found in a link to our [tensorslow-experimentation repo](https://github.com/oortega20/tensorslow-experimentation). Improving the accuracy of the current mnist classifier is something being researched! 
+Details of the Tensorslow MNIST Classifier can be found in a link to our [tensorslow-experimentation](https://github.com/oortega20/tensorslow-experimentation) repository. Improving the accuracy of the current MNIST classifier is something being researched! 
        
 
