@@ -8,6 +8,11 @@ authors= [
     {name = 'Oscar Ortega', email='oscar.g.ortega.5@berkeley.edu'},
 ]
 keywords = ['tensor', 'matrix', 'linear-algebra', 'machine-learning']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License" :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [build-system]
 requires = [
@@ -22,3 +27,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.urls]
+"Homepage" = "https://github.com/oortega20/tensorslow"
+
+
