@@ -1,0 +1,5 @@
+recursive-include imgs *.jpg
+recursive-include imgs *.png
+recursive-include src *.pkl
+recursive-include src *.png
+recursive-include tests *.py

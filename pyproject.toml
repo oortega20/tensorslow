@@ -12,7 +12,13 @@ keywords = ['tensor', 'matrix', 'linear-algebra', 'machine-learning']
 [build-system]
 requires = [
     "setuptools",
-]
+    "dill",
+    "iteration-utilities",
+    "numpy",
+    "tabulate",
+    "tqdm",
+    "Pillow",
+] 
 build-backend = "setuptools.build_meta"
 
 
