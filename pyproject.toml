@@ -1,6 +1,6 @@
 [project]
 name = 'tensorslow'
-version = '1.0.0'
+version = '1.0.1'
 description = 'A slower machine learning framework'
 requires-python = ">=3.9"
 readme = "README.md"

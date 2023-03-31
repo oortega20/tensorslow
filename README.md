@@ -87,8 +87,6 @@ from tensorslow.optimizers import SGD
 data = MNIST(batch_size=128)
 x_train, y_train = data.get_train_data()
 epochs = 10
-display_batch = 10
-save_model = 100
 model = ts_mnist_classifier(from_ts=False)
 
 
