@@ -34,6 +34,6 @@ class SGDMomentum(Optimizer):
         for grad_name, grad in grads.items():
             weight = weights[grad_name]
             v = self.velocities[name][grad_name]
-            v_new = self.momentum * v + self.learning_rate * grad
+            v_new = self.momentum * v + (1 - self.momentum) * grad
             self.velocities[name][grad_name] = v_new
-            weights[grad_name] = weight - v_new
+            weights[grad_name] = weight - self.learning_rate * v_new
