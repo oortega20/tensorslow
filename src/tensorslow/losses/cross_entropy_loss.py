@@ -20,11 +20,10 @@ class CrossEntropyLoss(Loss):
     and y_hat_i is the probability that sample i is a member of
     class i.
     """
-    def __init__(self, units='nats', eps=1e-7):
+    def __init__(self, units='nats'):
         self.loss = 0
         self.grad = Tensor([], (1,))
         self.log = log if units == 'nats' else log2
-        self.eps = eps
 
     def compute_loss(self, y_hat: Tensor, y: Tensor) -> Tuple[loss, Tensor]:
         """
@@ -39,8 +38,6 @@ class CrossEntropyLoss(Loss):
         loss, arg_max = 0.0, Tensor([], y_hat.shape, init='zeros')
         for n in range(num_samples):
             y_class = y.tensor[n]
-            if y_hat.tensor[n][y_class] <= 0:
-                y_hat.tensor[n][y_class] += self.eps
             loss -= self.log(y_hat.tensor[n][y_class])
             arg_max.tensor[n][y_class] = 1
 
