@@ -5,7 +5,7 @@ if __name__ == "__main__":
         long_description = fh.read()
     setup(
         name="tensorslow",
-        version="1.0.2",
+        version="1.0.3",
         description="A slower machine learning framework",
         author="Oscar Ortega",
         author_email="oscar.g.ortega.5@gmail.com",
